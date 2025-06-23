@@ -1,7 +1,5 @@
 function MaterialList() {
-    return (
-        <p>MaterialList</p>
-    )
+  return <p>MaterialList</p>;
 }
 
 export default MaterialList;

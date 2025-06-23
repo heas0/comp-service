@@ -1,7 +1,5 @@
 function EquipmentList() {
-    return (
-        <p>EquipmentList</p>
-    )
+  return <p>EquipmentList</p>;
 }
 
 export default EquipmentList;
