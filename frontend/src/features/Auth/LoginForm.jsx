@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "./useAuth.jsx";
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from './useAuth.jsx';
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
-    username: "",
-    password: "",
+    username: '',
+    password: '',
   });
   const [formError, setFormError] = useState(null);
 
@@ -14,7 +14,7 @@ const LoginForm = () => {
   const location = useLocation();
 
   // Определяем, откуда пользователь был перенаправлен
-  const from = location.state?.from?.pathname || "/orders";
+  const from = location.state?.from?.pathname || '/orders';
 
   // При успешной авторизации перенаправляем пользователя
   useEffect(() => {
@@ -23,24 +23,24 @@ const LoginForm = () => {
     }
   }, [isAuthenticated, navigate, from]);
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setFormError(null);
 
     if (!formData.username.trim() || !formData.password.trim()) {
-      setFormError("Пожалуйста, заполните все поля");
+      setFormError('Пожалуйста, заполните все поля');
       return;
     }
 
     try {
       await login(formData.username, formData.password);
     } catch (err) {
-      setFormError(err.message || "Произошла ошибка при авторизации");
+      setFormError(err.message || 'Произошла ошибка при авторизации');
     }
   };
 
@@ -103,11 +103,11 @@ const LoginForm = () => {
             disabled={loading}
             className={`w-full py-2 px-4 rounded-md ${
               loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-500 hover:bg-blue-600 text-white"
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-blue-500 hover:bg-blue-600 text-white'
             } transition-colors`}
           >
-            {loading ? "Вход..." : "Войти"}
+            {loading ? 'Вход...' : 'Войти'}
           </button>
         </form>
       </div>

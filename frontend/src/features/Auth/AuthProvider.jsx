@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { AuthContext } from "./AuthContext.jsx";
-import AuthApi from "./api/authApi.jsx";
+import { useEffect, useState } from 'react';
+import { AuthContext } from './AuthContext.jsx';
+import AuthApi from './api/authApi.jsx';
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(() => localStorage.getItem("token"));
+  const [token, setToken] = useState(() => localStorage.getItem('token'));
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,8 +23,8 @@ export const AuthProvider = ({ children }) => {
         setUser(userData);
         setError(null);
       } catch (err) {
-        console.error("Ошибка при получении данных пользователя:", err);
-        setError("Не удалось загрузить данные пользователя");
+        console.error('Ошибка при получении данных пользователя:', err);
+        setError('Не удалось загрузить данные пользователя');
         // Если токен невалидный - выходим из системы
         if (err.response?.status === 401) {
           logout();
@@ -45,13 +45,13 @@ export const AuthProvider = ({ children }) => {
 
       if (data && data.token) {
         setToken(data.token);
-        localStorage.setItem("token", data.token);
+        localStorage.setItem('token', data.token);
         return true;
       } else {
-        throw new Error("Неверный формат ответа от сервера");
+        throw new Error('Неверный формат ответа от сервера');
       }
     } catch (err) {
-      setError(err.message || "Ошибка при входе в систему");
+      setError(err.message || 'Ошибка при входе в систему');
       throw err;
     } finally {
       setLoading(false);
@@ -64,11 +64,11 @@ export const AuthProvider = ({ children }) => {
         await AuthApi.logout();
       }
     } catch (err) {
-      console.error("Ошибка при выходе из системы:", err);
+      console.error('Ошибка при выходе из системы:', err);
     } finally {
       setToken(null);
       setUser(null);
-      localStorage.removeItem("token");
+      localStorage.removeItem('token');
     }
   };
 
