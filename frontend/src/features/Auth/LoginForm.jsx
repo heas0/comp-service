@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './useAuth.jsx';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -45,73 +53,79 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="max-w-md w-full px-6 py-8 bg-white shadow-md rounded-md">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">
-          Вход в систему
-        </h2>
-
-        {(formError || error) && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {formError || error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="username"
-            >
-              Логин
-            </label>
-            <input
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        bgcolor: 'background.default',
+      }}
+    >
+      <Paper elevation={6} sx={{ p: 4, maxWidth: 400, width: '100%' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
+            Вход в систему
+          </Typography>
+          {(formError || error) && (
+            <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
+              {formError || error}
+            </Alert>
+          )}
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{ mt: 1, width: '100%' }}
+          >
+            <TextField
+              margin="normal"
+              required
+              fullWidth
               id="username"
-              type="text"
+              label="Логин"
               name="username"
-              placeholder="Введите логин"
+              autoComplete="username"
+              autoFocus
               value={formData.username}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               disabled={loading}
-              required
             />
-          </div>
-
-          <div className="mb-6">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="password"
-            >
-              Пароль
-            </label>
-            <input
-              id="password"
-              type="password"
+            <TextField
+              margin="normal"
+              required
+              fullWidth
               name="password"
-              placeholder="Введите пароль"
+              label="Пароль"
+              type="password"
+              id="password"
+              autoComplete="current-password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               disabled={loading}
-              required
             />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full py-2 px-4 rounded-md ${
-              loading
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-blue-500 hover:bg-blue-600 text-white'
-            } transition-colors`}
-          >
-            {loading ? 'Вход...' : 'Войти'}
-          </button>
-        </form>
-      </div>
-    </div>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              disabled={loading}
+              sx={{ mt: 3, mb: 2 }}
+            >
+              {loading ? 'Вход...' : 'Войти'}
+            </Button>
+          </Box>
+        </Box>
+      </Paper>
+    </Box>
   );
 };
 
