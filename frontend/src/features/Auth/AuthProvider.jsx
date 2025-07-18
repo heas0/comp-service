@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AuthContext } from './AuthContext.jsx';
-import AuthApi from './api/authApi.jsx';
+import AuthApi from './authApi.jsx';
 
 export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(() => localStorage.getItem('token'));
