@@ -1,10 +1,10 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import Layout from '../layout/Layout.jsx';
 import OrderList from '../features/Orders/OrderList.jsx';
-import ClientList from '../features/Clients/components/ClientList.jsx';
+import ClientList from '../features/Clients/ClientList.jsx';
 import EquipmentList from '../features/Equipments/EquipmentList.jsx';
 import ServiceList from '../features/Services/ServiceList.jsx';
-import MaterialList from '../features/Materials/components/MaterialList.jsx';
+import MaterialList from '../features/Materials/MaterialList.jsx';
 import LoginForm from '../features/Auth/LoginForm.jsx';
 import { AuthProvider } from '../features/Auth/AuthProvider.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
