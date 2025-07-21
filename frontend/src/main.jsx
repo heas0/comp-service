@@ -5,10 +5,10 @@ import AppRoutes from './routes/AppRoutes.jsx';
 import { CssBaseline } from '@mui/material';
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <CssBaseline />
-    <BrowserRouter>
-      <AppRoutes />
-    </BrowserRouter>
-  </StrictMode>,
+    <StrictMode>
+        <CssBaseline />
+        <BrowserRouter>
+            <AppRoutes />
+        </BrowserRouter>
+    </StrictMode>,
 );
