@@ -9,7 +9,9 @@ const Layout = () => {
             <Header />
             <Box display="flex">
                 <Sidebar />
-                <Outlet />
+                <Box>
+                    <Outlet />
+                </Box>
             </Box>
         </Box>
     );
