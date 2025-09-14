@@ -5,7 +5,9 @@
     "scripts": {
         "start": "node server.js",
         "dev": "nodemon server.js",
-        "format": "prettier --write ."
+        "format": "prettier --write .",
+        "db:schema": "node scripts/apply-schema.js",
+        "db:seed": "node scripts/seed-data.js"
     },
     "keywords": [],
     "author": "",

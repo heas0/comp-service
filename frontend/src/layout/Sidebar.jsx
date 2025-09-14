@@ -12,7 +12,7 @@ const Sidebar = () => {
         { path: '/clients', label: 'Клиенты' },
         { path: '/equipments', label: 'Техника клиентов' },
         { path: '/services', label: 'Услуги' },
-        { path: '/materials', label: 'Материалы' },
+        { path: '/components', label: 'Комплектующие' },
     ];
 
     return (

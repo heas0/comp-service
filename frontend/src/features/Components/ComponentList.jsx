@@ -14,17 +14,18 @@ import {
     Paper,
     CircularProgress,
     Backdrop,
+    MenuItem,
 } from '@mui/material';
 import {
     Add as AddIcon,
     Edit as EditIcon,
     Delete as DeleteIcon,
 } from '@mui/icons-material';
-import ClientsApi from '../../api/clientsApi.jsx';
+import ComponentsApi from '../../api/componentsApi.jsx';
 
-const ClientList = () => {
+const ComponentList = () => {
     // Управление состоянием
-    const [clients, setClients] = useState([]);
+    const [components, setComponents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [operationLoading, setOperationLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -32,13 +33,14 @@ const ClientList = () => {
     // Состояния диалогов
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogMode, setDialogMode] = useState('create'); // 'create' | 'edit'
-    const [selectedClient, setSelectedClient] = useState(null);
+    const [selectedComponent, setSelectedComponent] = useState(null);
 
     // Состояние формы
     const [formData, setFormData] = useState({
-        full_name: '',
-        phone: '',
-        email: '',
+        name: '',
+        type: '',
+        unit: '',
+        price: '',
     });
     const [formErrors, setFormErrors] = useState({});
 
@@ -49,6 +51,22 @@ const ClientList = () => {
         severity: 'success',
     });
 
+    // Типы комплектующих для выбора
+    const componentTypes = [
+        { value: 'Запчасть', label: 'Запчасть' },
+        { value: 'Аксессуар', label: 'Аксессуар' },
+    ];
+
+    // Единицы измерения для выбора
+    const units = [
+        { value: 'шт', label: 'шт' },
+        { value: 'кг', label: 'кг' },
+        { value: 'л', label: 'л' },
+        { value: 'м', label: 'м' },
+        { value: 'м²', label: 'м²' },
+        { value: 'упак', label: 'упак' },
+    ];
+
     // Конфигурация колонок Data Grid
     const columns = [
         {
@@ -58,21 +76,30 @@ const ClientList = () => {
             type: 'number',
         },
         {
-            field: 'full_name',
-            headerName: 'ФИО клиента',
+            field: 'name',
+            headerName: 'Название',
             flex: 1,
             minWidth: 200,
         },
         {
-            field: 'phone',
-            headerName: 'Телефон',
-            width: 150,
+            field: 'type',
+            headerName: 'Тип',
+            width: 130,
         },
         {
-            field: 'email',
-            headerName: 'Email',
-            flex: 1,
-            minWidth: 200,
+            field: 'unit',
+            headerName: 'Ед. изм.',
+            width: 100,
+        },
+        {
+            field: 'price',
+            headerName: 'Цена',
+            width: 120,
+            type: 'number',
+            valueFormatter: value => {
+                if (value == null) return '';
+                return `${parseFloat(value).toFixed(2)} ₽`;
+            },
         },
         {
             field: 'actions',
@@ -96,26 +123,26 @@ const ClientList = () => {
         },
     ];
 
-    // Загрузка данных клиентов
-    const loadClients = useCallback(async () => {
+    // Загрузка данных комплектующих
+    const loadComponents = useCallback(async () => {
         try {
             setLoading(true);
-            const data = await ClientsApi.getAll();
-            setClients(data);
+            const data = await ComponentsApi.getAll();
+            setComponents(data);
             setError(null);
         } catch (err) {
-            console.error('Ошибка при загрузке клиентов:', err);
+            console.error('Ошибка при загрузке комплектующих:', err);
             setError(err.message);
-            showNotification('Ошибка при загрузке клиентов', 'error');
+            showNotification('Ошибка при загрузке комплектующих', 'error');
         } finally {
             setLoading(false);
         }
     }, []);
 
-    // Загрузка данных при монтировании компонента
+    // Загрузка данных при монтировании комплектующего
     useEffect(() => {
-        loadClients();
-    }, [loadClients]);
+        loadComponents();
+    }, [loadComponents]);
 
     // Показать уведомление
     const showNotification = (message, severity = 'success') => {
@@ -130,56 +157,61 @@ const ClientList = () => {
     const validateForm = () => {
         const errors = {};
 
-        if (!formData.full_name.trim()) {
-            errors.full_name = 'ФИО обязательно для заполнения';
+        if (!formData.name.trim()) {
+            errors.name = 'Название обязательно для заполнения';
         }
 
-        if (!formData.phone.trim()) {
-            errors.phone = 'Телефон обязателен для заполнения';
+        if (!formData.type) {
+            errors.type = 'Тип обязателен для заполнения';
         }
 
-        if (
-            formData.email &&
-            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
-        ) {
-            errors.email = 'Некорректный формат email';
+        if (!formData.unit) {
+            errors.unit = 'Единица измерения обязательна для заполнения';
+        }
+
+        if (!formData.price || isNaN(parseFloat(formData.price))) {
+            errors.price = 'Цена должна быть числом';
+        } else if (parseFloat(formData.price) < 0) {
+            errors.price = 'Цена не может быть отрицательной';
         }
 
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
     };
 
-    // Обработка создания нового клиента
+    // Обработка создания нового комплектующего
     const handleCreate = () => {
         setDialogMode('create');
-        setSelectedClient(null);
+        setSelectedComponent(null);
         setFormData({
-            full_name: '',
-            phone: '',
-            email: '',
+            name: '',
+            type: '',
+            unit: '',
+            price: '',
         });
         setFormErrors({});
         setDialogOpen(true);
     };
 
-    // Обработка редактирования клиента
-    const handleEdit = client => {
+    // Обработка редактирования комплектующего
+    const handleEdit = component => {
         setDialogMode('edit');
-        setSelectedClient(client);
+        setSelectedComponent(component);
         setFormData({
-            full_name: client.full_name || '',
-            phone: client.phone || '',
-            email: client.email || '',
+            name: component.name || '',
+            type: component.type || '',
+            unit: component.unit || '',
+            price: component.price ? component.price.toString() : '',
         });
         setFormErrors({});
         setDialogOpen(true);
     };
 
-    // Обработка удаления клиента
-    const handleDelete = async client => {
+    // Обработка удаления комплектующего
+    const handleDelete = async component => {
         if (
             !window.confirm(
-                `Вы уверены, что хотите удалить клиента "${client.full_name}"?`,
+                `Вы уверены, что хотите удалить комплектующее "${component.name}"?`,
             )
         ) {
             return;
@@ -187,11 +219,11 @@ const ClientList = () => {
 
         try {
             setOperationLoading(true);
-            await ClientsApi.delete(client.id);
-            await loadClients();
-            showNotification('Клиент успешно удален');
+            await ComponentsApi.delete(component.id);
+            await loadComponents();
+            showNotification('Комплектующее успешно удалено');
         } catch (err) {
-            console.error('Ошибка при удалении клиента:', err);
+            console.error('Ошибка при удалении комплектующего:', err);
             showNotification(err.message, 'error');
         } finally {
             setOperationLoading(false);
@@ -207,18 +239,23 @@ const ClientList = () => {
         try {
             setOperationLoading(true);
 
+            const submitData = {
+                ...formData,
+                price: parseFloat(formData.price),
+            };
+
             if (dialogMode === 'create') {
-                await ClientsApi.create(formData);
-                showNotification('Клиент успешно создан');
+                await ComponentsApi.create(submitData);
+                showNotification('Комплектующее успешно создано');
             } else {
-                await ClientsApi.update(selectedClient.id, formData);
-                showNotification('Клиент успешно обновлен');
+                await ComponentsApi.update(selectedComponent.id, submitData);
+                showNotification('Комплектующее успешно обновлено');
             }
 
             setDialogOpen(false);
-            await loadClients();
+            await loadComponents();
         } catch (err) {
-            console.error('Ошибка при сохранении клиента:', err);
+            console.error('Ошибка при сохранении комплектующего:', err);
             showNotification(err.message, 'error');
         } finally {
             setOperationLoading(false);
@@ -267,7 +304,7 @@ const ClientList = () => {
                 }}
             >
                 <Typography variant="h4" component="h1">
-                    Клиенты
+                    Комплектующие
                 </Typography>
                 <Button
                     variant="contained"
@@ -275,7 +312,7 @@ const ClientList = () => {
                     onClick={handleCreate}
                     disabled={loading}
                 >
-                    Добавить клиента
+                    Добавить комплектующее
                 </Button>
             </Box>
 
@@ -289,7 +326,7 @@ const ClientList = () => {
             {/* Таблица данных */}
             <Paper elevation={2}>
                 <DataGrid
-                    rows={clients}
+                    rows={components}
                     columns={columns}
                     loading={loading}
                     pageSizeOptions={[5, 10, 25, 50]}
@@ -321,8 +358,8 @@ const ClientList = () => {
             >
                 <DialogTitle>
                     {dialogMode === 'create'
-                        ? 'Добавить клиента'
-                        : 'Редактировать клиента'}
+                        ? 'Добавить комплектующее'
+                        : 'Редактировать комплектующее'}
                 </DialogTitle>
                 <DialogContent>
                     <Box
@@ -334,37 +371,70 @@ const ClientList = () => {
                         }}
                     >
                         <TextField
-                            label="ФИО клиента"
-                            value={formData.full_name}
+                            label="Название комплектующего"
+                            value={formData.name}
                             onChange={e =>
-                                handleInputChange('full_name', e.target.value)
+                                handleInputChange('name', e.target.value)
                             }
-                            error={!!formErrors.full_name}
-                            helperText={formErrors.full_name}
+                            error={!!formErrors.name}
+                            helperText={formErrors.name}
                             fullWidth
                             required
                         />
                         <TextField
-                            label="Телефон"
-                            value={formData.phone}
+                            label="Тип комплектующего"
+                            select
+                            value={formData.type}
                             onChange={e =>
-                                handleInputChange('phone', e.target.value)
+                                handleInputChange('type', e.target.value)
                             }
-                            error={!!formErrors.phone}
-                            helperText={formErrors.phone}
+                            error={!!formErrors.type}
+                            helperText={formErrors.type}
                             fullWidth
                             required
-                        />
+                        >
+                            {componentTypes.map(option => (
+                                <MenuItem
+                                    key={option.value}
+                                    value={option.value}
+                                >
+                                    {option.label}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                         <TextField
-                            label="Email"
-                            type="email"
-                            value={formData.email}
+                            label="Единица измерения"
+                            select
+                            value={formData.unit}
                             onChange={e =>
-                                handleInputChange('email', e.target.value)
+                                handleInputChange('unit', e.target.value)
                             }
-                            error={!!formErrors.email}
-                            helperText={formErrors.email}
+                            error={!!formErrors.unit}
+                            helperText={formErrors.unit}
                             fullWidth
+                            required
+                        >
+                            {units.map(option => (
+                                <MenuItem
+                                    key={option.value}
+                                    value={option.value}
+                                >
+                                    {option.label}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                        <TextField
+                            label="Цена (₽)"
+                            type="number"
+                            value={formData.price}
+                            onChange={e =>
+                                handleInputChange('price', e.target.value)
+                            }
+                            error={!!formErrors.price}
+                            helperText={formErrors.price}
+                            fullWidth
+                            required
+                            inputProps={{ min: 0, step: 100 }}
                         />
                     </Box>
                 </DialogContent>
@@ -407,4 +477,4 @@ const ClientList = () => {
     );
 };
 
-export default ClientList;
+export default ComponentList;

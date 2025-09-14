@@ -1,0 +1,141 @@
+{
+    "attributes": [
+        {
+            "name": "Код комплектующего",
+            "location": [
+                "components.id",
+                "components_orders.component_id (fk)"
+            ],
+            "type": "integer"
+        },
+        {
+            "name": "Название комплектующего",
+            "location": ["components.name"],
+            "type": "text"
+        },
+        {
+            "name": "Тип комплектующего",
+            "location": ["components.type"],
+            "type": "text"
+        },
+        {
+            "name": "Единица измерения",
+            "location": ["components.unit"],
+            "type": "text"
+        },
+        {
+            "name": "Цена комплектующего",
+            "location": ["components.price"],
+            "type": "numeric(10,2)"
+        },
+        {
+            "name": "Количество комплектующего в заказе",
+            "location": ["components_orders.quantity"],
+            "type": "integer"
+        },
+        {
+            "name": "Цена комплектующего в заказе",
+            "location": ["components_orders.price"],
+            "type": "numeric(10,2)"
+        },
+        {
+            "name": "Код услуги",
+            "location": ["services.id", "services_orders.service_id (fk)"],
+            "type": "integer"
+        },
+        {
+            "name": "Название услуги",
+            "location": ["services.name"],
+            "type": "text"
+        },
+        {
+            "name": "Тип услуги",
+            "location": ["services.type"],
+            "type": "text"
+        },
+        {
+            "name": "Цена услуги",
+            "location": ["services.price"],
+            "type": "numeric(10,2)"
+        },
+        {
+            "name": "Количество услуги в заказе",
+            "location": ["services_orders.quantity"],
+            "type": "integer"
+        },
+        {
+            "name": "Цена услуги в заказе",
+            "location": ["services_orders.price"],
+            "type": "numeric(10,2)"
+        },
+        {
+            "name": "Код клиента",
+            "location": ["clients.id", "equipments.client_id (fk)"],
+            "type": "integer"
+        },
+        {
+            "name": "ФИО клиента",
+            "location": ["clients.full_name"],
+            "type": "text"
+        },
+        {
+            "name": "Телефон клиента",
+            "location": ["clients.phone"],
+            "type": "varchar(20)"
+        },
+        {
+            "name": "Почта клиента",
+            "location": ["clients.email"],
+            "type": "varchar(150)"
+        },
+        {
+            "name": "Код техники",
+            "location": ["equipments.id", "orders.equipment_id (fk)"],
+            "type": "integer"
+        },
+        {
+            "name": "Модель техники",
+            "location": ["equipments.model"],
+            "type": "text"
+        },
+        {
+            "name": "Тип техники",
+            "location": ["equipments.type"],
+            "type": "text"
+        },
+        {
+            "name": "Код заказа",
+            "location": [
+                "orders.id",
+                "components_orders.order_id (fk)",
+                "services_orders.order_id (fk)"
+            ],
+            "type": "integer"
+        },
+        {
+            "name": "Статус заказа",
+            "location": ["orders.status"],
+            "type": "enum('принят','в работе','выполнен')"
+        },
+        {
+            "name": "Проблема техники",
+            "location": ["orders.issue"],
+            "type": "text"
+        },
+        {
+            "name": "Комплектация техники",
+            "location": ["orders.package"],
+            "type": "text"
+        },
+        {
+            "name": "Дата создания заказа",
+            "location": ["orders.created_at"],
+            "type": "timestamp"
+        },
+        {
+            "name": "Дата завершения заказа",
+            "location": ["orders.completed_at"],
+            "type": "timestamp"
+        }
+    ]
+}
