@@ -20,7 +20,7 @@ function authMiddleware(req, res, next) {
     }
 }
 
-// Получить все компоненты
+// Получить все комплектующие
 router.get('/', authMiddleware, async (req, res) => {
     try {
         const result = await pool.query(
@@ -28,12 +28,12 @@ router.get('/', authMiddleware, async (req, res) => {
         );
         res.json(result.rows);
     } catch (err) {
-        console.error('Ошибка при получении компонентов:', err);
+        console.error('Ошибка при получении комплектующих:', err);
         res.status(500).json({ message: 'Ошибка сервера' });
     }
 });
 
-// Получить компонент по ID
+// Получить комплектующее по ID
 router.get('/:id', authMiddleware, async (req, res) => {
     const { id } = req.params;
     try {
@@ -43,17 +43,19 @@ router.get('/:id', authMiddleware, async (req, res) => {
         );
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ message: 'Компонент не найден' });
+            return res
+                .status(404)
+                .json({ message: 'Комплектующее не найдено' });
         }
 
         res.json(result.rows[0]);
     } catch (err) {
-        console.error('Ошибка при получении компонента:', err);
+        console.error('Ошибка при получении комплектующего:', err);
         res.status(500).json({ message: 'Ошибка сервера' });
     }
 });
 
-// Создать новый компонент
+// Создать новое комплектующее
 router.post('/', authMiddleware, async (req, res) => {
     const { name, type, unit, price } = req.body;
 
@@ -80,7 +82,7 @@ router.post('/', authMiddleware, async (req, res) => {
 
         if (nameCheck.rows.length > 0) {
             return res.status(400).json({
-                message: 'Компонент с таким названием уже существует',
+                message: 'Комплектующее с таким названием уже существует',
             });
         }
 
@@ -91,12 +93,12 @@ router.post('/', authMiddleware, async (req, res) => {
 
         res.status(201).json(result.rows[0]);
     } catch (err) {
-        console.error('Ошибка при создании компонента:', err);
+        console.error('Ошибка при создании комплектующего:', err);
         res.status(500).json({ message: 'Ошибка сервера' });
     }
 });
 
-// Обновить компонент
+// Обновить комплектующее
 router.put('/:id', authMiddleware, async (req, res) => {
     const { id } = req.params;
     const { name, type, unit, price } = req.body;
@@ -123,7 +125,9 @@ router.put('/:id', authMiddleware, async (req, res) => {
         );
 
         if (componentCheck.rows.length === 0) {
-            return res.status(404).json({ message: 'Компонент не найден' });
+            return res
+                .status(404)
+                .json({ message: 'Комплектующее не найдено' });
         }
 
         // Проверяем уникальность названия (исключая текущий компонент)
@@ -134,7 +138,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
         if (nameCheck.rows.length > 0) {
             return res.status(400).json({
-                message: 'Компонент с таким названием уже существует',
+                message: 'Комплектующее с таким названием уже существует',
             });
         }
 
@@ -145,12 +149,12 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
         res.json(result.rows[0]);
     } catch (err) {
-        console.error('Ошибка при обновлении компонента:', err);
+        console.error('Ошибка при обновлении комплектующего:', err);
         res.status(500).json({ message: 'Ошибка сервера' });
     }
 });
 
-// Удалить компонент
+// Удалить комплектующее
 router.delete('/:id', authMiddleware, async (req, res) => {
     const { id } = req.params;
 
@@ -162,7 +166,9 @@ router.delete('/:id', authMiddleware, async (req, res) => {
         );
 
         if (componentCheck.rows.length === 0) {
-            return res.status(404).json({ message: 'Компонент не найден' });
+            return res
+                .status(404)
+                .json({ message: 'Комплектующее не найдено' });
         }
 
         // Проверяем, используется ли компонент в заказах
@@ -174,15 +180,15 @@ router.delete('/:id', authMiddleware, async (req, res) => {
         if (orderCheck.rows.length > 0) {
             return res.status(400).json({
                 message:
-                    'Невозможно удалить компонент: он используется в заказах',
+                    'Невозможно удалить комплектующее: оно используется в заказах',
             });
         }
 
         await pool.query('DELETE FROM components WHERE id = $1', [id]);
 
-        res.json({ message: 'Компонент успешно удален' });
+        res.json({ message: 'Комплектующее успешно удалено' });
     } catch (err) {
-        console.error('Ошибка при удалении компонента:', err);
+        console.error('Ошибка при удалении комплектующего:', err);
         res.status(500).json({ message: 'Ошибка сервера' });
     }
 });

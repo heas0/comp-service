@@ -1,5 +1,4 @@
 -- SQL-схема для PostgreSQL
--- Без специфичных функций/ограничений: только PK и FK, базовые типы
 
 -- Пользователи системы
 CREATE TABLE IF NOT EXISTS users (
@@ -42,7 +41,7 @@ CREATE TABLE IF NOT EXISTS components (
 CREATE TABLE IF NOT EXISTS orders (
     id            SERIAL PRIMARY KEY,
     equipment_id INTEGER REFERENCES equipments(id),
-    status        TEXT,
+    status        TEXT CHECK (status IN ('принят', 'в работе', 'выполнен')),
     issue         TEXT,
     package       TEXT,
     created_at    TIMESTAMP,
