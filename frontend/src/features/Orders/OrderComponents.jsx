@@ -37,12 +37,11 @@ const OrderComponents = ({
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingComponent, setEditingComponent] = useState(null);
 
-    // Состояние формы
+    // Состояние формы (price = цена за единицу)
     const [componentForm, setComponentForm] = useState({
         component_id: '',
         quantity: 1,
-        price: '', // итоговая стоимость позиции
-        autoPrice: true, // если true — автоматически рассчитывать из цены за ед. * количество
+        price: '', // цена за единицу
     });
 
     // Загрузка доступных комплектующих
@@ -62,27 +61,21 @@ const OrderComponents = ({
     const openDialog = (component = null) => {
         if (component) {
             setEditingComponent(component);
-            const qty = component.quantity || 1;
-            const unit = Number(component.component_price || 0);
+            const qty = Number(component.quantity) || 1;
+            const unitFromRow = Number(component.component_price || 0);
             const total = Number(component.order_price || 0);
-            const expected = +(unit * qty).toFixed(2);
-            const isAuto = total ? +(+total).toFixed(2) === expected : true;
+            const derivedUnit =
+                total && qty ? +(total / qty).toFixed(2) : unitFromRow;
             setComponentForm({
                 component_id: component.component_id
                     ? component.component_id.toString()
                     : '',
                 quantity: qty,
-                price: total || '',
-                autoPrice: isAuto,
+                price: derivedUnit || '',
             });
         } else {
             setEditingComponent(null);
-            setComponentForm({
-                component_id: '',
-                quantity: 1,
-                price: '',
-                autoPrice: true,
-            });
+            setComponentForm({ component_id: '', quantity: 1, price: '' });
         }
         setDialogOpen(true);
     };
@@ -90,12 +83,7 @@ const OrderComponents = ({
     const closeDialog = () => {
         setDialogOpen(false);
         setEditingComponent(null);
-        setComponentForm({
-            component_id: '',
-            quantity: 1,
-            price: '',
-            autoPrice: true,
-        });
+        setComponentForm({ component_id: '', quantity: 1, price: '' });
     };
 
     const handleSubmit = () => {
@@ -105,16 +93,21 @@ const OrderComponents = ({
 
         if (!selectedComponent) return;
 
+        const qty = parseInt(componentForm.quantity) || 1;
+        const unitPriceInput = parseFloat(componentForm.price);
+        const effectiveUnit = !isNaN(unitPriceInput)
+            ? unitPriceInput
+            : Number(selectedComponent.price) || 0;
+        const total = +(effectiveUnit * qty).toFixed(2);
+
         const newComponent = {
             component_id: selectedComponent.id,
             name: selectedComponent.name,
             type: selectedComponent.type,
             unit: selectedComponent.unit,
-            component_price: selectedComponent.price,
-            quantity: parseInt(componentForm.quantity),
-            order_price:
-                parseFloat(componentForm.price) ||
-                selectedComponent.price * parseInt(componentForm.quantity),
+            component_price: effectiveUnit, // цена за единицу в заказе
+            quantity: qty,
+            order_price: total, // итоговая стоимость позиции
         };
 
         let updatedComponents;
@@ -315,11 +308,9 @@ const OrderComponents = ({
                                 setComponentForm(prev => ({
                                     ...prev,
                                     component_id: selectedId,
-                                    price:
-                                        prev.autoPrice && selected
-                                            ? selected.price *
-                                              (parseInt(prev.quantity) || 1)
-                                            : prev.price,
+                                    price: selected
+                                        ? selected.price
+                                        : prev.price,
                                 }));
                             }}
                             required
@@ -362,14 +353,13 @@ const OrderComponents = ({
 
                         <TextField
                             fullWidth
-                            label="Цена"
+                            label="Цена за ед."
                             type="number"
                             value={componentForm.price}
                             onChange={e =>
                                 setComponentForm(prev => ({
                                     ...prev,
                                     price: e.target.value,
-                                    autoPrice: false, // пользователь задал цену вручную — перестаём автосчитать
                                 }))
                             }
                             helperText="Цена за единицу"

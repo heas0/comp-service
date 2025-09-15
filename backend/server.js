@@ -7,6 +7,7 @@ const equipmentsRoutes = require('./routes/equipments');
 const componentsRoutes = require('./routes/components');
 const servicesRoutes = require('./routes/services');
 const ordersRoutes = require('./routes/orders');
+const analyticsRoutes = require('./routes/analytics');
 
 const app = express();
 app.use(cors());
@@ -18,6 +19,7 @@ app.use('/api/equipments', equipmentsRoutes);
 app.use('/api/components', componentsRoutes);
 app.use('/api/services', servicesRoutes);
 app.use('/api/orders', ordersRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

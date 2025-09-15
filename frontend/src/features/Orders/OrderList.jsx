@@ -304,18 +304,12 @@ const OrderList = () => {
                 components: (formData.components || []).map(c => ({
                     component_id: c.component_id,
                     quantity: Number(c.quantity) || 1,
-                    price:
-                        c.order_price ??
-                        (Number(c.component_price) || 0) *
-                            (Number(c.quantity) || 1),
+                    price: Number(c.component_price) || 0, // цена за единицу
                 })),
                 services: (formData.services || []).map(s => ({
                     service_id: s.service_id,
                     quantity: Number(s.quantity) || 1,
-                    price:
-                        s.order_price ??
-                        (Number(s.service_price) || 0) *
-                            (Number(s.quantity) || 1),
+                    price: Number(s.service_price) || 0, // цена за единицу
                 })),
             };
 
@@ -352,12 +346,12 @@ const OrderList = () => {
             const prevComponents = (selectedOrder.components || []).map(c => ({
                 component_id: c.component_id ?? c.id,
                 quantity: Number(c.quantity) || 1,
-                order_price: Number(c.order_price ?? c.price) || 0,
+                unit_price: Number(c.component_price ?? c.unit_price ?? 0) || 0,
             }));
             const nextComponents = (formData.components || []).map(c => ({
                 component_id: c.component_id,
                 quantity: Number(c.quantity) || 1,
-                order_price: Number(c.order_price) || 0,
+                unit_price: Number(c.component_price) || 0,
             }));
 
             const prevComponentsMap = new Map(
@@ -374,17 +368,17 @@ const OrderList = () => {
                     await OrdersApi.addComponent(orderId, {
                         component_id: Number(id),
                         quantity: next.quantity,
-                        price: next.order_price,
+                        price: next.unit_price,
                     });
                 } else {
                     const prev = prevComponentsMap.get(id);
                     if (
                         prev.quantity !== next.quantity ||
-                        prev.order_price !== next.order_price
+                        prev.unit_price !== next.unit_price
                     ) {
                         await OrdersApi.updateComponent(orderId, Number(id), {
                             quantity: next.quantity,
-                            price: next.order_price,
+                            price: next.unit_price,
                         });
                     }
                 }
@@ -401,12 +395,12 @@ const OrderList = () => {
             const prevServices = (selectedOrder.services || []).map(s => ({
                 service_id: s.service_id ?? s.id,
                 quantity: Number(s.quantity) || 1,
-                order_price: Number(s.order_price ?? s.price) || 0,
+                unit_price: Number(s.service_price ?? s.unit_price ?? 0) || 0,
             }));
             const nextServices = (formData.services || []).map(s => ({
                 service_id: s.service_id,
                 quantity: Number(s.quantity) || 1,
-                order_price: Number(s.order_price) || 0,
+                unit_price: Number(s.service_price) || 0,
             }));
 
             const prevServicesMap = new Map(
@@ -422,17 +416,17 @@ const OrderList = () => {
                     await OrdersApi.addService(orderId, {
                         service_id: Number(id),
                         quantity: next.quantity,
-                        price: next.order_price,
+                        price: next.unit_price,
                     });
                 } else {
                     const prev = prevServicesMap.get(id);
                     if (
                         prev.quantity !== next.quantity ||
-                        prev.order_price !== next.order_price
+                        prev.unit_price !== next.unit_price
                     ) {
                         await OrdersApi.updateService(orderId, Number(id), {
                             quantity: next.quantity,
-                            price: next.order_price,
+                            price: next.unit_price,
                         });
                     }
                 }

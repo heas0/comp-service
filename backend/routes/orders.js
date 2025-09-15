@@ -55,9 +55,9 @@ router.get('/', authMiddleware, async (req, res) => {
                 comp.name,
                 comp.type,
                 comp.unit,
-                comp.price as component_price,
                 co.quantity,
-                co.price as order_price
+                co.price AS unit_price,
+                (co.price * co.quantity) AS order_price
             FROM components_orders co
             JOIN components comp ON co.component_id = comp.id
             ORDER BY co.order_id, comp.name
@@ -72,9 +72,9 @@ router.get('/', authMiddleware, async (req, res) => {
                 s.id,
                 s.name,
                 s.type,
-                s.price as service_price,
                 so.quantity,
-                so.price as order_price
+                so.price AS unit_price,
+                (so.price * so.quantity) AS order_price
             FROM services_orders so
             JOIN services s ON so.service_id = s.id
             ORDER BY so.order_id, s.name
@@ -93,7 +93,7 @@ router.get('/', authMiddleware, async (req, res) => {
                 name: comp.name,
                 type: comp.type,
                 unit: comp.unit,
-                component_price: comp.component_price,
+                component_price: comp.unit_price,
                 quantity: comp.quantity,
                 order_price: comp.order_price,
             });
@@ -109,7 +109,7 @@ router.get('/', authMiddleware, async (req, res) => {
                 id: service.id,
                 name: service.name,
                 type: service.type,
-                service_price: service.service_price,
+                service_price: service.unit_price,
                 quantity: service.quantity,
                 order_price: service.order_price,
             });
@@ -169,9 +169,9 @@ router.get('/:id', authMiddleware, async (req, res) => {
                 comp.name,
                 comp.type,
                 comp.unit,
-                comp.price as component_price,
                 co.quantity,
-                co.price as order_price
+                co.price AS unit_price,
+                (co.price * co.quantity) AS order_price
             FROM components_orders co
             JOIN components comp ON co.component_id = comp.id
             WHERE co.order_id = $1
@@ -186,9 +186,9 @@ router.get('/:id', authMiddleware, async (req, res) => {
                 s.id,
                 s.name,
                 s.type,
-                s.price as service_price,
                 so.quantity,
-                so.price as order_price
+                so.price AS unit_price,
+                (so.price * so.quantity) AS order_price
             FROM services_orders so
             JOIN services s ON so.service_id = s.id
             WHERE so.order_id = $1

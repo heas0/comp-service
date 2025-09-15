@@ -5,6 +5,7 @@ import ClientList from '../features/Clients/ClientList.jsx';
 import EquipmentList from '../features/Equipments/EquipmentList.jsx';
 import ServiceList from '../features/Services/ServiceList.jsx';
 import ComponentList from '../features/Components/ComponentList.jsx';
+import Analytics from '../features/Analytics/Analytics.jsx';
 import LoginForm from '../features/Auth/LoginForm.jsx';
 import { AuthProvider } from '../features/Auth/AuthProvider.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
@@ -28,6 +29,7 @@ function AppRoutes() {
                     <Route path="equipments" element={<EquipmentList />} />
                     <Route path="services" element={<ServiceList />} />
                     <Route path="components" element={<ComponentList />} />
+                    <Route path="analytics" element={<Analytics />} />
                 </Route>
             </Routes>
         </AuthProvider>
