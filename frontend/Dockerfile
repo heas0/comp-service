@@ -13,6 +13,9 @@ COPY . .
 # По умолчанию базовый URL API — /api; можно переопределить через build-arg
 ARG VITE_API_URL=/api
 ENV VITE_API_URL=${VITE_API_URL}
+# Увеличиваем память V8 для сборки Vite (можно переопределить через build-arg)
+ARG NODE_OPTIONS=--max-old-space-size=2048
+ENV NODE_OPTIONS=${NODE_OPTIONS}
 RUN npm run build
 
 # 2) Стадия рантайма
