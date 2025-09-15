@@ -16,7 +16,16 @@ ENV VITE_API_URL=${VITE_API_URL}
 # Увеличиваем память V8 для сборки Vite (можно переопределить через build-arg)
 ARG NODE_OPTIONS=--max-old-space-size=2048
 ENV NODE_OPTIONS=${NODE_OPTIONS}
-RUN npm run build
+
+# По умолчанию уменьшаем потребление памяти при сборке
+# (можно переопределить build-аргументами)
+ARG VITE_MINIFY=false
+ARG VITE_SOURCEMAP=false
+ENV VITE_MINIFY=${VITE_MINIFY}
+ENV VITE_SOURCEMAP=${VITE_SOURCEMAP}
+
+# Передаём флаги непосредственно в vite build
+RUN npm run build -- --minify=${VITE_MINIFY} --sourcemap=${VITE_SOURCEMAP}
 
 # 2) Стадия рантайма
 FROM nginx:1.27-alpine AS runtime
