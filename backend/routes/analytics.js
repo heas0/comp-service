@@ -80,7 +80,7 @@ router.get('/', authMiddleware, async (req, res) => {
                 s.id,
                 s.name,
                 COALESCE(SUM(so.quantity), 0)::int AS count,
-                SUM(so.price) AS revenue
+                COALESCE(SUM(so.price * so.quantity), 0) AS revenue
              FROM services_orders so
              JOIN orders o ON o.id = so.order_id
              JOIN services s ON s.id = so.service_id
@@ -96,7 +96,7 @@ router.get('/', authMiddleware, async (req, res) => {
                 c.id,
                 c.name,
                 COALESCE(SUM(co.quantity), 0)::int AS count,
-                SUM(co.price) AS revenue
+                COALESCE(SUM(co.price * co.quantity), 0) AS revenue
              FROM components_orders co
              JOIN orders o ON o.id = co.order_id
              JOIN components c ON c.id = co.component_id
